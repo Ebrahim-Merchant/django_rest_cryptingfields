@@ -15,6 +15,7 @@ setup(
     keywords = "rest framework django encryption serializer fields",
     url = "https://github.com/russellmorley/django_rest_cryptingfields",
     packages=['django_rest_cryptingfields'],
+    install_requires=['python-keyczar==0.715'],
     long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 3 - Alpha",

@@ -1,6 +1,6 @@
 SECRET_KEY = 'fake-key'
 INSTALLED_APPS = [
-    "tests", "django_save_logger"
+    "tests", "django_rest_cryptingfields"
 ]
 
 DATABASES = {

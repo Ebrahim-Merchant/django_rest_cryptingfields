@@ -19,7 +19,7 @@ class Crypter(object):
     """
 
     @classmethod
-    def generate_key_string():
+    def generate_key_string(cls):
         return str(keys.AesKey.Generate())
 
     def __init__(self, key_string):
