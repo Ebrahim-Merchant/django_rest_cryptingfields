@@ -45,9 +45,9 @@ class Crypter(object):
 class CryptingCharField(serializers.CharField):
     """A rest_framework serializer field that encrypts text upon deserialization and decrypts upon serialization. 
     """
-    def __init__(self, crypter = Crypter, **kwargs):
-        super(CryptingCharField, self).__init__(kwargs)
-        self.crypter = crypter
+    def __init__(self, key_string, **kwargs):
+        super(CryptingCharField, self).__init__(**kwargs)
+        self.crypter = Crypter(key_string)
 
     def to_representation(self, value):
         value = self.crypter.decrypt(value)

@@ -1,7 +1,14 @@
 from django.db import models
 
 class Parent(models.Model):
-    char_field = models.CharField(max_length = 50, default = 'Parent CharField contents.')
+    char_field = models.CharField(max_length = 1000, default = 'Parent CharField contents.')
+
+    def __unicode__(self):
+        return self.char_field
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
 
 class Child(models.Model):
     char_field = models.CharField(max_length=50, default = 'Child CharField contents.', unique=True)
