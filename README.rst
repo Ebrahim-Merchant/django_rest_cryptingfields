@@ -6,7 +6,9 @@ django_rest_cryptingfields
 Features
 --------
 
-- 
+- A simplified interface for interacting with keyczar's crypter for symmetric crypting.
+- An extension to `rest_framework's <http://www.django-rest-framework.org/>`_ charfield that encrypts before deserialization and decrypts when serializing. When used with a `ModelSerializer <http://www.django-rest-framework.org/api-guide/serializers/#modelserializer>`_, the field is stored in the database encrypted.
+- A simplified interface for generating a symmmetric key string that can be saved in a database. 
 
 
 Installing
