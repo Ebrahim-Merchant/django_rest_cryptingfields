@@ -2,6 +2,7 @@ from django.db import models
 
 class Parent(models.Model):
     char_field = models.CharField(max_length = 1000, default = 'Parent CharField contents.')
+    text_field = models.TextField()
 
     def __unicode__(self):
         return self.char_field

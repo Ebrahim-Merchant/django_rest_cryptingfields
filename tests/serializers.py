@@ -2,13 +2,22 @@ from rest_framework import serializers
 from django_rest_cryptingfields.serializer_fields import CryptingCharField
 from .models import Parent
 
-def getParentSerializerClass(key_string):
-    class ParentSerializer(serializers.ModelSerializer):
+def getParentCharFieldSerializerClass(key_string):
+    class ParentCharFieldSerializer(serializers.ModelSerializer):
         class Meta:
             model = Parent
+            fields = ('id', 'char_field',)
 
-        char_field = CryptingCharField(key_string = key_string)
+        char_field = CryptingCharField(key_string = key_string, allow_blank=True)
 
-    return ParentSerializer    
+    return ParentCharFieldSerializer
 
+def getParentTextFieldSerializerClass(key_string):
+    class ParentTextFieldSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Parent
+            fields = ('id', 'text_field',)
 
+        text_field = CryptingCharField(key_string = key_string, allow_blank=True)
+
+    return ParentTextFieldSerializer

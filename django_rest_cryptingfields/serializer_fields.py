@@ -1,8 +1,9 @@
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+import six
 
 try:
-    from keyczar import keyczar, keyczart, readers, keyinfo, keys
+    from keyczar import keyczar, keyczart, readers, keyinfo, keys, errors
 except ImportError:
     raise ImportError('Requires keyczar, http://www.keyczar.org')
 
@@ -20,7 +21,7 @@ class Crypter(object):
 
     @classmethod
     def generate_key_string(cls):
-        return str(keys.AesKey.Generate())
+        return str(keys.AesKey.Generate(size=256))
 
     def __init__(self, key_string):
         key = keys.AesKey.Read(key_string)        
@@ -37,9 +38,12 @@ class Crypter(object):
         """
 
     def decrypt(self, value):
-        return self.crypter.Decrypt(value)
+        value = self.crypter.Decrypt(value)
+        return value.decode('utf-8')
 
     def encrypt(self, data):
+        if type(data) == six.types.UnicodeType:
+            data = data.encode('utf-8')
         return self.crypter.Encrypt(data)
 
 class CryptingCharField(serializers.CharField):
@@ -50,7 +54,12 @@ class CryptingCharField(serializers.CharField):
         self.crypter = Crypter(key_string)
 
     def to_representation(self, value):
-        value = self.crypter.decrypt(value)
+        if value is not None and len(value) > 0:
+            try:
+                value = self.crypter.decrypt(value)
+            except errors.Base64DecodingError:
+                #just return value as-is if it can't be decrypted in case it was set as unencrypted default value.
+                pass
         return super(CryptingCharField, self).to_representation(value)
 
     def to_internal_value(self, data):
