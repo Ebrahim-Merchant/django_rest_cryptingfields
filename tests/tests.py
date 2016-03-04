@@ -3,7 +3,7 @@ from .models import Parent, Child
 from django_rest_cryptingfields.serializer_fields import CryptingCharField, Crypter
 from rest_framework import serializers
 from keyczar import errors
-from .serializers import getParentCharFieldSerializerClass, getParentTextFieldSerializerClass
+from .serializers import getParentCharFieldSerializerClass, getParentCharFieldMaxSixLengthSerializerClass, getParentCharFieldMinSixLengthSerializerClass, getParentTextFieldSerializerClass
 import json
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
@@ -93,6 +93,34 @@ class SerializerFieldUnitTests(TestCase):
         serialized_model = JSONRenderer().render(data)
         serialized_model = json.dumps(json.loads(serialized_model)) #get rid of space due to differences in parser output....
         self.assertEqual(serialized_model, json_string)
+
+    def test_cryptingcharfield_text_greater_than_max_length(self):
+        json_string = json.dumps({'char_field': '1234567'})
+        stream = BytesIO(json_string)
+        data = JSONParser().parse(stream)        
+        deserializer = getParentCharFieldMaxSixLengthSerializerClass(self.key_string)(data=data)
+        self.assertFalse(deserializer.is_valid())
+
+    def test_cryptingcharfield_text_less_than_max_length(self):
+        json_string = json.dumps({'char_field': '12345'})
+        stream = BytesIO(json_string)
+        data = JSONParser().parse(stream)        
+        deserializer = getParentCharFieldMaxSixLengthSerializerClass(self.key_string)(data=data)
+        self.assertTrue(deserializer.is_valid())
+
+    def test_cryptingcharfield_text_greater_than_min_length(self):
+        json_string = json.dumps({'char_field': '1234567'})
+        stream = BytesIO(json_string)
+        data = JSONParser().parse(stream)        
+        deserializer = getParentCharFieldMinSixLengthSerializerClass(self.key_string)(data=data)
+        self.assertTrue(deserializer.is_valid())
+
+    def test_cryptingcharfield_text_less_than_max_length(self):
+        json_string = json.dumps({'char_field': '12345'})
+        stream = BytesIO(json_string)
+        data = JSONParser().parse(stream)        
+        deserializer = getParentCharFieldMinSixLengthSerializerClass(self.key_string)(data=data)
+        self.assertFalse(deserializer.is_valid())
 
     def test_cryptingtextfield(self):
         print(self.key_string)

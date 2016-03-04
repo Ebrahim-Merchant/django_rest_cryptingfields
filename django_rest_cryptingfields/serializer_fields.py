@@ -50,6 +50,12 @@ class CryptingCharField(serializers.CharField):
     """A rest_framework serializer field that encrypts text upon deserialization and decrypts upon serialization. 
     """
     def __init__(self, key_string, **kwargs):
+        #intercept max_length since rest-framework converts to internal value then validates
+        # (https://github.com/tomchristie/django-rest-framework/blob/3.0.0/rest_framework/fields.py#L322)
+        # and we need to validate first.
+        self._max_length = kwargs.pop('max_length', None)
+        self._min_length = kwargs.pop('min_length', None)
+
         super(CryptingCharField, self).__init__(**kwargs)
         self.crypter = Crypter(key_string)
 
@@ -63,5 +69,12 @@ class CryptingCharField(serializers.CharField):
         return super(CryptingCharField, self).to_representation(value)
 
     def to_internal_value(self, data):
+        if self._max_length is not None and len(data) > self._max_length:
+            msg = u'Data length of {} greater than max_length of {}'
+            raise serializers.ValidationError(msg.format(len(data), self._max_length))
+        if self._min_length is not None and len(data) < self._min_length:
+            msg = u'Data length of {} smaller than max_length of {}'
+            raise serializers.ValidationError(msg.format(len(data), self._min_length))
+
         value = super(CryptingCharField, self).to_internal_value(data)
         return self.crypter.encrypt(value)
