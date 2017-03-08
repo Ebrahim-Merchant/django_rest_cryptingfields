@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Parent, Child
+from .models import Parent, Child, SignedParent
 from django_rest_cryptingfields.serializer_fields import CryptingCharField, Crypter
 from rest_framework import serializers
 from keyczar import errors
@@ -9,7 +9,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 from django.utils.six import BytesIO
 from .models import Parent
-
+import datetime
 
 TEXT = u'CHINESE: \u4E2D\u56FD; ENGLISH: Permission is hereby granted, free of charge, to any person obtaining a copy' \
            '+of this software and associated documentation files (the "Software"), to deal' \
@@ -145,3 +145,26 @@ class SerializerFieldUnitTests(TestCase):
 
 
 
+class SignedModelUnitTests(TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_signed_model(self):
+      signed_parent = SignedParent(**{
+          'char_field': 'I am the char field',
+          'text_field': 'I am the text field',
+          'bool_field': True,
+          'datetime_field': datetime.datetime.now()
+      })
+      signed_parent.save()
+
+      signed_parents = SignedParent.objects.get(pk=1)
+
+      signed_parent.char_field = 'I am the new char field data'
+      signed_parent.save()
+
+      signed_parents = SignedParent.objects.get(pk=1)
+      #when saving or getting a signed parent doesn't throw an exception the signature validated correctly.
