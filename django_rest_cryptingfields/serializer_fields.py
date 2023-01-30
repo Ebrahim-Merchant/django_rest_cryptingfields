@@ -3,7 +3,7 @@ from django.core.exceptions import ImproperlyConfigured
 import six
 
 try:
-    from keyczar import keyczar, keyczart, readers, keyinfo, keys, errors
+    from keyczar import keyczar, readers, keyinfo, keys, errors
 except ImportError:
     raise ImportError('Requires keyczar, http://www.keyczar.org')
 
