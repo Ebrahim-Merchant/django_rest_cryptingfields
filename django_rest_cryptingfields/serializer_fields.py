@@ -39,11 +39,9 @@ class Crypter(object):
 
     def decrypt(self, value):
         value = self.crypter.Decrypt(value)
-        return value.decode('utf-8')
+        return value
 
     def encrypt(self, data):
-        if type(data) == six.types.UnicodeType:
-            data = data.encode('utf-8')
         return self.crypter.Encrypt(data)
 
 class CryptingCharField(serializers.CharField):
